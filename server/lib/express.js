@@ -98,6 +98,11 @@ export default async function (app) {
         secret: config.keys.opencollective.sessionSecret,
         resave: false,
         saveUninitialized: false,
+        cookie: {
+          maxAge: 24 * 60 * 60 * 1000, // 1 day
+          httpOnly: true,
+          secure: config.env === 'production' || config.env === 'staging',
+        },
       }),
     );
 
