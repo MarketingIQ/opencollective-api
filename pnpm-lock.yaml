@@ -368,7 +368,7 @@ devDependencies:
     specifier: ^10.0.6
     version: 10.0.6
   '@types/node':
-    specifier: ^20.10.1
+    specifier: ^20.10.2
     version: 20.10.2
   '@types/node-fetch':
     specifier: ^2.6.9
@@ -404,7 +404,7 @@ devDependencies:
     specifier: ^1.6.0
     version: 1.6.0
   codecov:
-    specifier: ^3.8.2
+    specifier: ^3.8.3
     version: 3.8.3
   commitizen:
     specifier: ^4.3.0
@@ -413,7 +413,7 @@ devDependencies:
     specifier: ^3.3.0
     version: 3.3.0(typescript@5.3.2)
   eslint:
-    specifier: ^8.54.0
+    specifier: ^8.55.0
     version: 8.55.0
   eslint-config-opencollective:
     specifier: ^3.0.3
@@ -464,7 +464,7 @@ devDependencies:
     specifier: ^13.4.0
     version: 13.4.0
   nodemon:
-    specifier: ^3.0.1
+    specifier: ^3.0.2
     version: 3.0.2
   npm-run-all:
     specifier: ^4.1.5
