@@ -82,7 +82,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: 'package.json'
-          cache: 'npm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       # Checkouts
 
@@ -124,16 +141,8 @@ jobs:
 
       # Prepare API
 
-      - name: Restore node_modules (api)
-        uses: actions/cache@v3
-        id: api-node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-api-node-modules-${{ hashFiles('package-lock.json') }}-${{ secrets.CACHE_VERSION }}
-
       - name: Install dependencies (api)
-        if: steps.api-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --prefer-offline --no-audit
+        run: pnpm install
 
       - name: Restore build (api)
         uses: actions/cache@v3
@@ -144,7 +153,7 @@ jobs:
 
       - name: Build (api)
         if: steps.api-build.outputs.cache-hit != 'true'
-        run: npm run build
+        run: pnpm run build
 
       # Prepare Frontend
 

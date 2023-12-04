@@ -54,7 +54,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - run: npm run lint:check
+      - run: pnpm run lint:check
 
   prettier:
     runs-on: ubuntu-latest
@@ -90,7 +90,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - run: npm run prettier:check
+      - run: pnpm run prettier:check
 
   typescript:
     runs-on: ubuntu-latest
@@ -126,7 +126,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - run: npm run type:check
+      - run: pnpm run type:check
 
   # depcheck:
   #   runs-on: ubuntu-latest
@@ -206,7 +206,7 @@ jobs:
           key: ${{ runner.os }}-api-build-${{ github.sha }}
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
   test:
     runs-on: ubuntu-latest
@@ -259,13 +259,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - run: npm run db:restore
-      - run: npm run db:migrate
+      - run: pnpm run db:restore
+      - run: pnpm run db:migrate
 
-      - run: npm run test -- --ignore "test/server/graphql/**"
+      - run: pnpm run test -- --ignore "test/server/graphql/**"
 
       - name: Report coverage
-        run: npm run test:coverage -- -F Unit
+        run: pnpm run test:coverage -- -F Unit
 
   test-graphql:
     runs-on: ubuntu-latest
@@ -317,13 +317,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - run: npm run db:restore
-      - run: npm run db:migrate
+      - run: pnpm run db:restore
+      - run: pnpm run db:migrate
 
-      - run: npm run test:graphql
+      - run: pnpm run test:graphql
 
       - name: Report coverage
-        run: npm run test:coverage -- -F GraphQL
+        run: pnpm run test:coverage -- -F GraphQL
 
   schema-update:
     runs-on: ubuntu-latest
