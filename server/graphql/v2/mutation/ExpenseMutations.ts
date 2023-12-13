@@ -437,9 +437,9 @@ const expenseMutations = {
       const draftKey = process.env.OC_ENV === 'e2e' || process.env.OC_ENV === 'ci' ? 'draft-key' : uuid();
 
       const fromCollective = await remoteUser.getCollective({ loaders: req.loaders });
-      const payeeLegacyId = expenseData.payee?.legacyId || expenseData.payee?.id;
-      const payee = payeeLegacyId
-        ? (await fetchAccountWithReference({ legacyId: payeeLegacyId }, { throwIfMissing: true }))?.minimal
+      const hasExistingPayee = expenseData.payee.legacyId || expenseData.payee.id;
+      const payee = hasExistingPayee
+        ? (await fetchAccountWithReference(expenseData.payee, { throwIfMissing: true }))?.minimal
         : expenseData.payee;
       const expense = await models.Expense.create({
         ...pick(expenseData, DRAFT_EXPENSE_FIELDS),

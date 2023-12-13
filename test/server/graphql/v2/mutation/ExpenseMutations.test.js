@@ -3290,7 +3290,7 @@ describe('server/graphql/v2/mutation/ExpenseMutations', () => {
       // Bypass RateLimit
       // sandbox.clock.tick(1000 * 10);
       const existingUser = await fakeUser();
-      const expense = { ...invoice, payee: { id: existingUser.collective.id } };
+      const expense = { ...invoice, payee: { legacyId: existingUser.collective.id } };
       const result = await graphqlQueryV2(
         draftExpenseAndInviteUserMutation,
         { expense, account: { legacyId: collective.id } },
