@@ -30,6 +30,11 @@ export const CommonAccountsCollectionQueryArgs = {
     type: GraphQLBoolean,
     description: 'Included collectives which are archived',
   },
+  skipGuests: {
+    type: GraphQLBoolean,
+    description: 'Included collectives which are archived',
+    defaultValue: true,
+  },
   isActive: {
     type: GraphQLBoolean,
     description: 'Only return "active" accounts with Financial Contributions enabled if true.',
@@ -51,6 +56,10 @@ const AccountsCollectionQuery = {
     ...CollectionArgs,
     ...CommonAccountsCollectionQueryArgs,
     host: {
+      type: new GraphQLList(GraphQLAccountReferenceInput),
+      description: 'Host hosting the account',
+    },
+    parent: {
       type: new GraphQLList(GraphQLAccountReferenceInput),
       description: 'Host hosting the account',
     },
