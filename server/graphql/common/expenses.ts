@@ -1808,7 +1808,7 @@ export async function editExpense(req: express.Request, expenseData: ExpenseData
     ...(<Pick<ExpenseData, ExpenseEditableFieldsUnion>>(
       pick(expenseData, isPaidCreditCardCharge ? EXPENSE_PAID_CHARGE_EDITABLE_FIELDS : EXPENSE_EDITABLE_FIELDS)
     )),
-    data: !expense.data ? null : cloneDeep(omit(expense.data, ['items', 'draftKey'])), // Make sure we omit draft key and items
+    data: !expense.data ? null : cloneDeep(omit(expense.data, ['items', 'draftKey', 'recipient', 'quote'])), // Make sure we omit draft key and items
   };
 
   // Let submitter customize the currency
