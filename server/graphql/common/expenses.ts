@@ -55,6 +55,7 @@ import { reportErrorToSentry, reportMessageToSentry } from '../../lib/sentry';
 import { notifyTeamAboutSpamExpense } from '../../lib/spam';
 import { deepJSONBSet } from '../../lib/sql';
 import { createTransactionsForManuallyPaidExpense, createTransactionsFromPaidExpense } from '../../lib/transactions';
+import { CreateTransfer } from '../../lib/transferwise';
 import twoFactorAuthLib from '../../lib/two-factor-authentication';
 import { canUseFeature } from '../../lib/user-permissions';
 import { formatCurrency, parseToBoolean } from '../../lib/utils';
@@ -942,7 +943,7 @@ export const validateExpenseCustomData = (value: Record<string, unknown> | null)
 export const scheduleExpenseForPayment = async (
   req: express.Request,
   expense: Expense,
-  options: { feesPayer?: 'COLLECTIVE' | 'PAYEE' } = {},
+  options: { feesPayer?: 'COLLECTIVE' | 'PAYEE'; transferDetails?: CreateTransfer['details'] } = {},
 ): Promise<Expense> => {
   if (expense.status === 'SCHEDULED_FOR_PAYMENT') {
     throw new BadRequest('Expense is already scheduled for payment');
@@ -974,7 +975,7 @@ export const scheduleExpenseForPayment = async (
 
   // If Wise, add expense to a new batch group
   if (expense.PayoutMethod.type === PayoutMethodTypes.BANK_ACCOUNT) {
-    await paymentProviders.transferwise.scheduleExpenseForPayment(expense);
+    await paymentProviders.transferwise.scheduleExpenseForPayment(expense, options?.transferDetails);
   }
   // If PayPal, check if host is connected to PayPal
   else if (expense.PayoutMethod.type === PayoutMethodTypes.PAYPAL) {
@@ -2183,6 +2184,8 @@ export async function setTransferWiseExpenseAsProcessing({ host, expense, data, 
     message: expense.data?.paymentOption?.formattedEstimatedDelivery
       ? `ETA: ${expense.data.paymentOption.formattedEstimatedDelivery}`
       : undefined,
+    reference: expense.data?.transfer?.details?.reference,
+    estimatedDelivery: expense.data?.quote?.paymentOption?.estimatedDelivery,
   });
   return expense;
 }
@@ -2457,6 +2460,7 @@ type PayExpenseArgs = {
   feesPayer?: 'COLLECTIVE' | 'PAYEE'; // Defaults to COLLECTIVE
   paymentProcessorFeeInHostCurrency?: number; // Defaults to 0
   totalAmountPaidInHostCurrency?: number;
+  transferDetails?: CreateTransfer['details'];
 };
 
 /**
@@ -2605,7 +2609,13 @@ export async function payExpense(req: express.Request, args: PayExpenseArgs): Pr
           throw new Error('Host is not connected to Transferwise');
         }
 
-        const data = await paymentProviders.transferwise.payExpense(connectedAccount, payoutMethod, expense);
+        const data = await paymentProviders.transferwise.payExpense(
+          connectedAccount,
+          payoutMethod,
+          expense,
+          undefined,
+          args?.transferDetails,
+        );
 
         // Early return, Webhook will mark expense as Paid when the transaction completes.
         return setTransferWiseExpenseAsProcessing({
